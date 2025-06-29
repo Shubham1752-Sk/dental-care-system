@@ -1,166 +1,92 @@
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useMemo } from 'react';
+import { usePatients } from '@/hooks/usePatients';
+import { PatientCard } from '@/components/patients/PatientCard';
+import { PatientStats } from '@/components/patients/PatientStats';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { usePatients } from '@/hooks/usePatients';
-import { useAppointments } from '@/hooks/useAppointments';
-import { Users, Phone, Mail, Plus, Edit, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Search } from 'lucide-react';
+import { Patient } from '@/types';
+import { toast } from '@/hooks/use-toast';
 
-export default function Patients() {
+const Patients = () => {
   const { patients } = usePatients();
-  const { appointments } = useAppointments();
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Filter patients based on search term
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.phone.includes(searchTerm)
-  );
+  const filteredPatients = useMemo(() => {
+    return patients.filter(patient =>
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [patients, searchTerm]);
 
-  // Calculate patient statistics
-  const patientsWithContact = patients.filter(p => p.phone).length;
-  const patientsWithEmail = patients.filter(p => p.email).length;
+  const handleViewPatient = (patient: Patient) => {
+    toast({
+      title: "Patient Details",
+      description: `Viewing details for ${patient.name}`,
+    });
+  };
 
-  // Get appointment count and revenue for each patient
-  const getPatientStats = (patientId: string) => {
-    const patientAppointments = appointments.filter(a => a.patientId === patientId);
-    const appointmentCount = patientAppointments.length;
-    const totalSpent = patientAppointments
-      .filter(a => a.cost)
-      .reduce((sum, a) => sum + (a.cost || 0), 0);
-    return { appointmentCount, totalSpent };
+  const handleEditPatient = (patient: Patient) => {
+    toast({
+      title: "Edit Patient",
+      description: `Editing ${patient.name}'s information`,
+    });
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900">Patient Management</h2>
-          <p className="text-gray-600 mt-1">Manage your patients and their information</p>
-        </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Patient
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Patients</CardTitle>
-            <Users className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{patients.length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">With Contact Info</CardTitle>
-            <Phone className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{patientsWithContact}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">With Email</CardTitle>
-            <Mail className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{patientsWithEmail}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Patients Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-lg font-semibold">Patients ({patients.length})</CardTitle>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800">Patients</h1>
+            <p className="text-slate-600 mt-1">Manage patient records and information</p>
           </div>
-          <div className="mt-4">
+          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Patient
+          </Button>
+        </div>
+
+        {/* Stats */}
+        <PatientStats patients={patients} />
+
+        {/* Search */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="Search patients by name, phone, or email..."
+              placeholder="Search patients..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-md"
+              className="pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 transition-colors"
             />
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200">
-                <tr className="text-left">
-                  <th className="pb-3 text-sm font-medium text-gray-500">Patient</th>
-                  <th className="pb-3 text-sm font-medium text-gray-500">Contact</th>
-                  <th className="pb-3 text-sm font-medium text-gray-500">Date of Birth</th>
-                  <th className="pb-3 text-sm font-medium text-gray-500">Health Info</th>
-                  <th className="pb-3 text-sm font-medium text-gray-500">Statistics</th>
-                  <th className="pb-3 text-sm font-medium text-gray-500">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredPatients.map((patient) => {
-                  const stats = getPatientStats(patient.id);
-                  return (
-                    <tr key={patient.id} className="hover:bg-gray-50">
-                      <td className="py-4">
-                        <div>
-                          <div className="font-medium text-gray-900">{patient.name}</div>
-                          <div className="text-sm text-gray-500">{patient.email}</div>
-                        </div>
-                      </td>
-                      <td className="py-4">
-                        <div className="flex items-center text-sm text-gray-900">
-                          <Phone className="h-4 w-4 mr-1" />
-                          {patient.phone}
-                        </div>
-                      </td>
-                      <td className="py-4 text-sm text-gray-900">
-                        {format(new Date(patient.dateOfBirth), 'MMM dd, yyyy')}
-                      </td>
-                      <td className="py-4 text-sm text-gray-900 max-w-xs truncate">
-                        {patient.healthInfo}
-                      </td>
-                      <td className="py-4">
-                        <div className="text-sm">
-                          <div className="font-medium text-gray-900">
-                            {stats.appointmentCount} appointments
-                          </div>
-                          <div className="text-gray-500">
-                            ${stats.totalSpent} spent
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4">
-                        <div className="flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Patients Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredPatients.length > 0 ? (
+            filteredPatients.map((patient) => (
+              <PatientCard
+                key={patient.id}
+                patient={patient}
+                onView={handleViewPatient}
+                onEdit={handleEditPatient}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <div className="text-slate-400 text-lg">No patients found</div>
+              <p className="text-slate-500 mt-2">Try adjusting your search criteria</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Patients;
