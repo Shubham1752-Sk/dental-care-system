@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Users, Calendar, FileText, BarChart3 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -7,11 +6,9 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 
@@ -23,7 +20,7 @@ const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -31,8 +28,10 @@ export function AppSidebar() {
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? 'bg-blue-50 text-blue-600 font-medium border-r-2 border-blue-600' : 'hover:bg-gray-50 text-gray-700';
 
+  const isCollapsed = state === 'collapsed';
+
   return (
-    <Sidebar className={collapsed ? 'w-16' : 'w-64'} collapsible>
+    <Sidebar className={isCollapsed ? 'w-16' : 'w-64'} collapsible="icon">
       <SidebarContent className="bg-white border-r border-gray-200">
         {/* Logo Section */}
         <div className="p-4 border-b border-gray-200">
@@ -40,7 +39,7 @@ export function AppSidebar() {
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">DC</span>
             </div>
-            {!collapsed && (
+            {!isCollapsed && (
               <div>
                 <h2 className="font-bold text-gray-900">Dental Center</h2>
                 <p className="text-xs text-gray-500">Management</p>
@@ -57,7 +56,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink to={item.url} end className={getNavCls}>
                       <item.icon className="h-5 w-5" />
-                      {!collapsed && <span className="ml-3">{item.title}</span>}
+                      {!isCollapsed && <span className="ml-3">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

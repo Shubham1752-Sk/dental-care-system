@@ -36,7 +36,7 @@ function AppContent() {
 
   // Admin users get the full sidebar layout
   return (
-    <SidebarProvider collapsedWidth={64}>
+    <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
