@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Appointment } from '@/types';
 
-// Mock data for demonstration
+// Enhanced mock data for demonstration
 const MOCK_APPOINTMENTS: Appointment[] = [
   {
     id: 'a1',
@@ -25,6 +25,40 @@ const MOCK_APPOINTMENTS: Appointment[] = [
     comment: 'Patient comfortable with procedure',
     appointmentDateTime: new Date('2024-01-20T14:00:00'),
     status: 'pending',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'a3',
+    patientId: 'p1',
+    title: 'Teeth Whitening',
+    description: 'Professional teeth whitening treatment',
+    comment: 'Scheduled follow-up',
+    appointmentDateTime: new Date('2025-02-05T15:00:00'),
+    status: 'pending',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'a4',
+    patientId: 'p2',
+    title: 'Follow-up Checkup',
+    description: 'Post-treatment checkup',
+    comment: 'Healing well',
+    appointmentDateTime: new Date('2025-01-25T11:00:00'),
+    status: 'pending',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'a5',
+    patientId: 'p2',
+    title: 'Dental Cleaning',
+    description: 'Regular dental cleaning and checkup',
+    comment: 'Good oral hygiene',
+    appointmentDateTime: new Date('2025-01-20T14:00:00'),
+    cost: 120,
+    status: 'completed',
     createdAt: new Date(),
     updatedAt: new Date()
   }

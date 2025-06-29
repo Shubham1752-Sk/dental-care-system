@@ -3,6 +3,7 @@ import { Users, Calendar, DollarSign, Activity } from 'lucide-react';
 import { KPICard } from './KPICard';
 import { RecentAppointments } from './RecentAppointments';
 import { TopPatients } from './TopPatients';
+import { RevenueChart } from './RevenueChart';
 import { usePatients } from '@/hooks/usePatients';
 import { useAppointments } from '@/hooks/useAppointments';
 
@@ -21,8 +22,14 @@ export function AdminDashboard() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-gray-600 mt-1">Welcome back, here's what's happening today</p>
+        <h2 className="text-3xl font-bold text-gray-900">Admin Dashboard</h2>
+        <p className="text-gray-600 mt-1">Welcome back, admin@entnt.in</p>
+      </div>
+
+      {/* Dashboard Overview */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Dashboard</h3>
+        <p className="text-gray-600">Overview of your dental practice</p>
       </div>
 
       {/* KPI Cards */}
@@ -35,24 +42,23 @@ export function AdminDashboard() {
           trend={{ value: 12, isPositive: true }}
         />
         <KPICard
-          title="Appointments"
-          value={appointments.length}
-          description="This month"
-          icon={Calendar}
-          trend={{ value: 8, isPositive: true }}
-        />
-        <KPICard
-          title="Revenue"
+          title="Total Revenue"
           value={`$${totalRevenue.toLocaleString()}`}
           description="Total earned"
           icon={DollarSign}
           trend={{ value: 15, isPositive: true }}
         />
         <KPICard
-          title="Treatments"
-          value={`${completedTreatments}/${completedTreatments + pendingTreatments}`}
-          description="Completed vs Pending"
+          title="Completed Treatments"
+          value={completedTreatments}
+          description="Treatments completed"
           icon={Activity}
+        />
+        <KPICard
+          title="Pending Treatments"
+          value={pendingTreatments}
+          description="Awaiting completion"
+          icon={Calendar}
         />
       </div>
 
@@ -61,6 +67,9 @@ export function AdminDashboard() {
         <RecentAppointments />
         <TopPatients />
       </div>
+
+      {/* Revenue Chart */}
+      <RevenueChart />
     </div>
   );
 }

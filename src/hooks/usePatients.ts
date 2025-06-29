@@ -2,29 +2,53 @@
 import { useState, useEffect } from 'react';
 import { Patient } from '@/types';
 
-// Mock data for demonstration
+// Enhanced mock data for demonstration
 const MOCK_PATIENTS: Patient[] = [
   {
     id: 'p1',
     name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1234567890',
-    dateOfBirth: new Date('1990-01-01'),
+    email: 'john@entnt.in',
+    phone: '1234567890',
+    dateOfBirth: new Date('1990-05-10'),
     address: '123 Main St, City',
     emergencyContact: 'Jane Doe - +1234567891',
-    healthInfo: 'No allergies, regular checkups',
+    healthInfo: 'No allergies',
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
     id: 'p2',
-    name: 'Alice Smith',
-    email: 'alice@example.com',
-    phone: '+1234567892',
-    dateOfBirth: new Date('1985-05-15'),
+    name: 'Jane Smith',
+    email: 'jane@entnt.in',
+    phone: '9876543210',
+    dateOfBirth: new Date('1985-08-15'),
     address: '456 Oak Ave, City',
     emergencyContact: 'Bob Smith - +1234567893',
-    healthInfo: 'Diabetic, sensitive to certain medications',
+    healthInfo: 'Allergic to penicillin',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'p3',
+    name: 'Mike Johnson',
+    email: 'mike@entnt.in',
+    phone: '5555555555',
+    dateOfBirth: new Date('1992-12-03'),
+    address: '789 Pine St, City',
+    emergencyContact: 'Sarah Johnson - +5555555556',
+    healthInfo: 'Diabetes, regular medication',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: 'p4',
+    name: 'Sarah Wilson',
+    email: 'sarah@entnt.in',
+    phone: '1111111111',
+    dateOfBirth: new Date('1988-03-22'),
+    address: '321 Elm St, City',
+    emergencyContact: 'Tom Wilson - +1111111112',
+    healthInfo: 'No known allergies',
     createdAt: new Date(),
     updatedAt: new Date()
   }
