@@ -14,6 +14,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/useAuth';
 
 const items = [
   { title: 'Dashboard', url: '/', icon: Home },
@@ -25,28 +26,29 @@ const items = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
+  // console.log('Sidebar state:', state);
 
   return (
     <Sidebar collapsible="icon" className="border-r bg-white">
-      <SidebarHeader className="border-b p-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+      <SidebarHeader className="w-full border-b p-4">
+        <div className="w-full flex items-center justify-between gap-2">
+          {/* <div className="max-w-8 max-h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
             <Menu className="h-4 w-4 text-white" />
-          </div>
+          </div> */}
           {!isCollapsed && (
             <div>
               <h2 className="text-lg font-semibold text-slate-800">DentalCare</h2>
               <p className="text-xs text-slate-500">Management System</p>
             </div>
           )}
+          <div className={` ${isCollapsed && "p-2"} border-t`}>
+            <SidebarTrigger className="w-full justify-center" />
+          </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className={isCollapsed ? "sr-only" : ""}>
-            Navigation
-          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -73,10 +75,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <div className="p-4 border-t">
-        <SidebarTrigger className="w-full justify-center" />
-      </div>
     </Sidebar>
   );
 }

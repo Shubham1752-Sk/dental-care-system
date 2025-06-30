@@ -58,7 +58,7 @@ export function PatientStats({ patients }: PatientStatsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {statCards.map((stat, index) => (
-        <Card key={index} className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group hover:scale-[1.02]">
+        <Card key={index} className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 group ">
           <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgColor} opacity-50`} />
           <CardHeader className="relative pb-2">
             <div className="flex items-center justify-between">

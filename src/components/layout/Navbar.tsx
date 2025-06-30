@@ -1,19 +1,20 @@
 
 import { Button } from '@/components/ui/button';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { User, LogOut, Bell } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const { isMobile } = useSidebar();
 
   return (
     <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-slate-200 sticky top-0 z-50">
-      <div className="flex items-center justify-between h-16 px-6">
+      <div className="flex items-center justify-between px-6 py-3">
         <div className="flex items-center space-x-4">
-          {user?.role === 'admin' && (
-            <SidebarTrigger className="lg:hidden hover:bg-slate-100 transition-colors duration-200 rounded-lg p-2" />
+          {user?.role === 'admin' && isMobile && (
+            <SidebarTrigger className=" hover:bg-slate-100 transition-colors duration-200 rounded-lg p-2" />
           )}
           {user?.role === 'patient' && (
             <div className="flex items-center space-x-3">
