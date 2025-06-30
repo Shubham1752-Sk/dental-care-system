@@ -4,16 +4,22 @@ import { useAppointments } from '@/hooks/useAppointments';
 import { AppointmentFilters } from '@/components/appointments/AppointmentFilters';
 import { AppointmentCard } from '@/components/appointments/AppointmentCard';
 import { AppointmentStats } from '@/components/appointments/AppointmentStats';
+import { AppointmentDetailsModal } from '@/components/appointments/AppointmentDetailsModal';
+import { AppointmentFormModal } from '@/components/appointments/AppointmentFormModal';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Appointment } from '@/types';
 
 const Appointments = () => {
-  const { appointments, updateAppointment, deleteAppointment } = useAppointments();
+  const { appointments, addAppointment, updateAppointment, deleteAppointment } = useAppointments();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter(appointment => {
@@ -53,11 +59,19 @@ const Appointments = () => {
     });
   };
 
-  const handleEdit = (appointment: Appointment) => {
-    toast({
-      title: "Edit Appointment",
-      description: `Editing appointment for ${appointment.title}`,
-    });
+  const handleViewAppointment = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleEditAppointment = (appointment: Appointment) => {
+    setEditingAppointment(appointment);
+    setIsFormModalOpen(true);
+  };
+
+  const handleAddAppointment = () => {
+    setEditingAppointment(null);
+    setIsFormModalOpen(true);
   };
 
   const handleDelete = (appointmentId: string) => {
@@ -66,6 +80,28 @@ const Appointments = () => {
       title: "Appointment deleted",
       description: "The appointment has been successfully deleted",
     });
+  };
+
+  const handleFormSubmit = (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'> | Appointment) => {
+    if ('id' in appointmentData) {
+      updateAppointment(appointmentData.id, appointmentData);
+      toast({
+        title: "Appointment updated",
+        description: `${appointmentData.title} has been updated successfully.`,
+      });
+    } else {
+      addAppointment(appointmentData);
+      toast({
+        title: "Appointment created",
+        description: `${appointmentData.title} has been scheduled successfully.`,
+      });
+    }
+  };
+
+  const handleEditFromDetails = (appointment: Appointment) => {
+    setIsDetailsModalOpen(false);
+    setEditingAppointment(appointment);
+    setIsFormModalOpen(true);
   };
 
   return (
@@ -77,7 +113,10 @@ const Appointments = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Appointments</h1>
             <p className="text-slate-600 mt-1 text-sm sm:text-base">Manage and track all patient appointments</p>
           </div>
-          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-sm sm:text-base">
+          <Button 
+            onClick={handleAddAppointment}
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
+          >
             <Plus className="h-4 w-4 mr-2" />
             New Appointment
           </Button>
@@ -104,7 +143,8 @@ const Appointments = () => {
                 key={appointment.id}
                 appointment={appointment}
                 onStatusChange={handleStatusChange}
-                onEdit={handleEdit}
+                onView={handleViewAppointment}
+                onEdit={handleEditAppointment}
                 onDelete={handleDelete}
               />
             ))
@@ -116,6 +156,21 @@ const Appointments = () => {
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      <AppointmentDetailsModal
+        appointment={selectedAppointment}
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        onEdit={handleEditFromDetails}
+      />
+
+      <AppointmentFormModal
+        appointment={editingAppointment}
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSubmit={handleFormSubmit}
+      />
     </div>
   );
 };

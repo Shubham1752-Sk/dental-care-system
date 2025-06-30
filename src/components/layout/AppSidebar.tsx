@@ -24,9 +24,8 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const isCollapsed = state === 'collapsed';
-  // console.log('Sidebar state:', state);
+  const { state, isMobile } = useSidebar();
+  const isCollapsed = state === 'collapsed' && !isMobile;
 
   return (
     <Sidebar collapsible="icon" className="border-r bg-white">
@@ -35,7 +34,7 @@ export function AppSidebar() {
           {/* <div className="max-w-8 max-h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
             <Menu className="h-4 w-4 text-white" />
           </div> */}
-          {!isCollapsed && (
+          {(!isCollapsed || isMobile) && (
             <div>
               <h2 className="text-lg font-semibold text-slate-800">DentalCare</h2>
               <p className="text-xs text-slate-500">Management System</p>
@@ -66,7 +65,7 @@ export function AppSidebar() {
                       }
                     >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
-                      {!isCollapsed && <span>{item.title}</span>}
+                      {(!isCollapsed || isMobile) && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

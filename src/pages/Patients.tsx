@@ -3,6 +3,8 @@ import { useState, useMemo } from 'react';
 import { usePatients } from '@/hooks/usePatients';
 import { PatientCard } from '@/components/patients/PatientCard';
 import { PatientStats } from '@/components/patients/PatientStats';
+import { PatientDetailsModal } from '@/components/patients/PatientDetailsModal';
+import { PatientFormModal } from '@/components/patients/PatientFormModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
@@ -10,8 +12,12 @@ import { Patient } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
 const Patients = () => {
-  const { patients } = usePatients();
+  const { patients, addPatient, updatePatient } = usePatients();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
 
   const filteredPatients = useMemo(() => {
     return patients.filter(patient =>
@@ -22,17 +28,40 @@ const Patients = () => {
   }, [patients, searchTerm]);
 
   const handleViewPatient = (patient: Patient) => {
-    toast({
-      title: "Patient Details",
-      description: `Viewing details for ${patient.name}`,
-    });
+    setSelectedPatient(patient);
+    setIsDetailsModalOpen(true);
   };
 
   const handleEditPatient = (patient: Patient) => {
-    toast({
-      title: "Edit Patient",
-      description: `Editing ${patient.name}'s information`,
-    });
+    setEditingPatient(patient);
+    setIsFormModalOpen(true);
+  };
+
+  const handleAddPatient = () => {
+    setEditingPatient(null);
+    setIsFormModalOpen(true);
+  };
+
+  const handleFormSubmit = (patientData: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'> | Patient) => {
+    if ('id' in patientData) {
+      updatePatient(patientData.id, patientData);
+      toast({
+        title: "Patient updated",
+        description: `${patientData.name}'s information has been updated successfully.`,
+      });
+    } else {
+      addPatient(patientData);
+      toast({
+        title: "Patient added",
+        description: `${patientData.name} has been added successfully.`,
+      });
+    }
+  };
+
+  const handleEditFromDetails = (patient: Patient) => {
+    setIsDetailsModalOpen(false);
+    setEditingPatient(patient);
+    setIsFormModalOpen(true);
   };
 
   return (
@@ -44,7 +73,10 @@ const Patients = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Patients</h1>
             <p className="text-slate-600 mt-1 text-sm sm:text-base">Manage patient records and information</p>
           </div>
-          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-sm sm:text-base">
+          <Button 
+            onClick={handleAddPatient}
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Patient
           </Button>
@@ -85,6 +117,21 @@ const Patients = () => {
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      <PatientDetailsModal
+        patient={selectedPatient}
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        onEdit={handleEditFromDetails}
+      />
+
+      <PatientFormModal
+        patient={editingPatient}
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSubmit={handleFormSubmit}
+      />
     </div>
   );
 };
