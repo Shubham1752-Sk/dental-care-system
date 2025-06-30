@@ -87,7 +87,7 @@ const Patients = () => {
 
         {/* Search */}
         <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
-          <div className="relative max-w-md">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Search patients..."

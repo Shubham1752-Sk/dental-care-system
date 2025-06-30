@@ -38,9 +38,9 @@ export function AppointmentCard({ appointment, onStatusChange, onView, onEdit, o
   };
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-200 border-slate-200 group hover:border-blue-200">
-      <CardContent className="p-4 sm:p-6">
-        <div className="space-y-4">
+    <Card className="w-full h-full hover:shadow-lg transition-all duration-200 border-slate-200 group hover:border-blue-200">
+      <CardContent className="h-full p-4 sm:p-6">
+        <div className="h-full flex flex-col justify-between space-y-4">
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-2">
             <h3 className="text-lg sm:text-xl font-semibold text-slate-800 group-hover:text-blue-700 transition-colors">

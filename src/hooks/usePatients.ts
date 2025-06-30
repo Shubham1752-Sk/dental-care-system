@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { Patient } from '@/types';
 
-// Enhanced mock data for demonstration
 const MOCK_PATIENTS: Patient[] = [
   {
     id: 'p1',

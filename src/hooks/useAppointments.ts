@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { Appointment } from '@/types';
 
-// Enhanced mock data with more appointments including past ones
 const MOCK_APPOINTMENTS: Appointment[] = [
   {
     id: 'a1',
@@ -108,16 +107,70 @@ const MOCK_APPOINTMENTS: Appointment[] = [
   }
 ];
 
+const STORAGE_KEY = 'dental_appointments';
+
+// Create a singleton state to share across all hook instances
+let globalAppointments: Appointment[] = [];
+let listeners: (() => void)[] = [];
+
+const notifyListeners = () => {
+  listeners.forEach(listener => listener());
+};
+
+const initializeAppointments = () => {
+  if (globalAppointments.length === 0) {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        globalAppointments = parsed.map((apt: any) => ({
+          ...apt,
+          appointmentDateTime: new Date(apt.appointmentDateTime),
+          createdAt: new Date(apt.createdAt),
+          updatedAt: new Date(apt.updatedAt)
+        }));
+      } else {
+        globalAppointments = [...MOCK_APPOINTMENTS];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(globalAppointments));
+      }
+    } catch (error) {
+      console.error('Error loading appointments from localStorage:', error);
+      globalAppointments = [...MOCK_APPOINTMENTS];
+    }
+  }
+};
+
+const saveToStorage = () => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(globalAppointments));
+  } catch (error) {
+    console.error('Error saving appointments to localStorage:', error);
+  }
+};
+
 export function useAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call
+    // Initialize appointments on first load
+    initializeAppointments();
+    setAppointments([...globalAppointments]);
+    
+    // Add this component to listeners
+    const updateState = () => {
+      setAppointments([...globalAppointments]);
+    };
+    listeners.push(updateState);
+    
     setTimeout(() => {
-      setAppointments(MOCK_APPOINTMENTS);
       setLoading(false);
     }, 500);
+
+    // Cleanup listener on unmount
+    return () => {
+      listeners = listeners.filter(listener => listener !== updateState);
+    };
   }, []);
 
   const addAppointment = (appointment: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -127,21 +180,25 @@ export function useAppointments() {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    setAppointments(prev => [...prev, newAppointment]);
+    globalAppointments = [...globalAppointments, newAppointment];
+    saveToStorage();
+    notifyListeners();
   };
 
   const updateAppointment = (id: string, updates: Partial<Appointment>) => {
-    setAppointments(prev => 
-      prev.map(appointment => 
-        appointment.id === id 
-          ? { ...appointment, ...updates, updatedAt: new Date() }
-          : appointment
-      )
+    globalAppointments = globalAppointments.map(appointment => 
+      appointment.id === id 
+        ? { ...appointment, ...updates, updatedAt: new Date() }
+        : appointment
     );
+    saveToStorage();
+    notifyListeners();
   };
 
   const deleteAppointment = (id: string) => {
-    setAppointments(prev => prev.filter(appointment => appointment.id !== id));
+    globalAppointments = globalAppointments.filter(appointment => appointment.id !== id);
+    saveToStorage();
+    notifyListeners();
   };
 
   return {

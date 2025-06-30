@@ -32,7 +32,7 @@ export function AppointmentFormModal({ appointment, selectedDate, isOpen, onClos
     appointmentDateTime: selectedDate || new Date(),
     cost: '',
     treatment: '',
-    status: 'pending' as const
+    status: 'pending' as 'pending' | 'completed' | 'cancelled'
   });
 
   useEffect(() => {
