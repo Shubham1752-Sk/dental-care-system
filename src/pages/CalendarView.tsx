@@ -6,15 +6,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { useAppointments } from '@/hooks/useAppointments';
 import { usePatients } from '@/hooks/usePatients';
-import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { AppointmentForm } from '@/components/appointments/AppointmentForm';
+import { ChevronLeft, ChevronRight, Calendar, Clock, Plus } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from 'date-fns';
+import { toast } from '@/hooks/use-toast';
+import { Appointment } from '@/types';
 
 export default function CalendarView() {
-  const { appointments } = useAppointments();
+  const { appointments, addAppointment } = useAppointments();
   const { patients } = usePatients();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -57,31 +61,52 @@ export default function CalendarView() {
     }
   };
 
+  const handleNewAppointment = (date?: Date) => {
+    setSelectedDate(date || new Date());
+    setIsFormOpen(true);
+  };
+
+  const handleAppointmentSubmit = (appointmentData: Omit<Appointment, 'id' | 'createdAt' | 'updatedAt'>) => {
+    addAppointment(appointmentData);
+    setIsFormOpen(false);
+    toast({
+      title: "Appointment created",
+      description: "New appointment has been successfully created",
+    });
+  };
+
   const selectedDateAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Calendar</h2>
-          <p className="text-gray-600 mt-1">View and manage appointments</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Calendar</h2>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">View and manage appointments</p>
         </div>
+        <Button 
+          onClick={() => handleNewAppointment()}
+          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          New Appointment
+        </Button>
       </div>
 
       {/* Calendar */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-xl font-semibold flex items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <CardTitle className="text-lg sm:text-xl font-semibold flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
               Monthly View
             </CardTitle>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Button variant="outline" size="sm" onClick={() => navigateMonth('prev')}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-lg font-medium min-w-[140px] text-center">
+              <span className="text-base sm:text-lg font-medium min-w-[120px] sm:min-w-[140px] text-center">
                 {format(currentDate, 'MMMM yyyy')}
               </span>
               <Button variant="outline" size="sm" onClick={() => navigateMonth('next')}>
@@ -90,12 +115,12 @@ export default function CalendarView() {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2 sm:p-6">
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1">
             {/* Day Headers */}
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="p-2 text-center text-sm font-medium text-gray-500 border-b">
+              <div key={day} className="p-1 sm:p-2 text-center text-xs sm:text-sm font-medium text-gray-500 border-b">
                 {day}
               </div>
             ))}
@@ -108,18 +133,18 @@ export default function CalendarView() {
               return (
                 <div
                   key={day.toISOString()}
-                  className={`min-h-[100px] p-2 border border-gray-100 cursor-pointer hover:bg-gray-50 ${
+                  className={`min-h-[60px] sm:min-h-[100px] p-1 sm:p-2 border border-gray-100 cursor-pointer hover:bg-gray-50 ${
                     isToday ? 'bg-blue-50 border-blue-200' : ''
                   }`}
                   onClick={() => handleDateClick(day)}
                 >
-                  <div className={`text-sm font-medium mb-1 ${
+                  <div className={`text-xs sm:text-sm font-medium mb-1 ${
                     isToday ? 'text-blue-600' : 'text-gray-900'
                   }`}>
                     {format(day, 'd')}
                   </div>
                   <div className="space-y-1">
-                    {dayAppointments.slice(0, 2).map(appointment => (
+                    {dayAppointments.slice(0, window.innerWidth < 640 ? 1 : 2).map(appointment => (
                       <div
                         key={appointment.id}
                         className="text-xs p-1 rounded truncate flex items-center space-x-1"
@@ -128,9 +153,9 @@ export default function CalendarView() {
                         <span className="truncate">{appointment.title}</span>
                       </div>
                     ))}
-                    {dayAppointments.length > 2 && (
+                    {dayAppointments.length > (window.innerWidth < 640 ? 1 : 2) && (
                       <div className="text-xs text-gray-500">
-                        +{dayAppointments.length - 2} more
+                        +{dayAppointments.length - (window.innerWidth < 640 ? 1 : 2)} more
                       </div>
                     )}
                   </div>
@@ -143,12 +168,22 @@ export default function CalendarView() {
 
       {/* Date Detail Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2" />
-              {selectedDate && format(selectedDate, 'MMM dd, yyyy')}
-            </DialogTitle>
+            <div className="flex justify-between items-center">
+              <DialogTitle className="flex items-center">
+                <Calendar className="h-5 w-5 mr-2" />
+                {selectedDate && format(selectedDate, 'MMM dd, yyyy')}
+              </DialogTitle>
+              <Button
+                size="sm"
+                onClick={() => handleNewAppointment(selectedDate!)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add
+              </Button>
+            </div>
           </DialogHeader>
           <div className="space-y-4">
             {selectedDateAppointments.length === 0 ? (
@@ -180,6 +215,20 @@ export default function CalendarView() {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Appointment Form Dialog */}
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Appointment</DialogTitle>
+          </DialogHeader>
+          <AppointmentForm
+            selectedDate={selectedDate || undefined}
+            onSubmit={handleAppointmentSubmit}
+            onCancel={() => setIsFormOpen(false)}
+          />
         </DialogContent>
       </Dialog>
     </div>

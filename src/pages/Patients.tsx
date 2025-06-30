@@ -36,15 +36,15 @@ const Patients = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Patients</h1>
-            <p className="text-slate-600 mt-1">Manage patient records and information</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Patients</h1>
+            <p className="text-slate-600 mt-1 text-sm sm:text-base">Manage patient records and information</p>
           </div>
-          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+          <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 text-sm sm:text-base">
             <Plus className="h-4 w-4 mr-2" />
             Add Patient
           </Button>
@@ -54,20 +54,20 @@ const Patients = () => {
         <PatientStats patients={patients} />
 
         {/* Search */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Search patients..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+              className="pl-10 h-10 sm:h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 transition-colors text-sm sm:text-base"
             />
           </div>
         </div>
 
         {/* Patients Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
           {filteredPatients.length > 0 ? (
             filteredPatients.map((patient) => (
               <PatientCard
@@ -79,8 +79,8 @@ const Patients = () => {
             ))
           ) : (
             <div className="col-span-full text-center py-12">
-              <div className="text-slate-400 text-lg">No patients found</div>
-              <p className="text-slate-500 mt-2">Try adjusting your search criteria</p>
+              <div className="text-slate-400 text-base sm:text-lg">No patients found</div>
+              <p className="text-slate-500 mt-2 text-sm sm:text-base">Try adjusting your search criteria</p>
             </div>
           )}
         </div>
