@@ -53,40 +53,86 @@ const MOCK_PATIENTS: Patient[] = [
   }
 ];
 
+const STORAGE_KEY = 'dental_patients';
+
+let globalPatients: Patient[] = [];
+let patientListeners: (() => void)[] = [];
+
+const notifyPatientListeners = () => {
+  patientListeners.forEach(listener => listener());
+};
+
+const initializePatients = () => {
+  if (globalPatients.length === 0) {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        globalPatients = JSON.parse(stored);
+      } else {
+        globalPatients = [...MOCK_PATIENTS];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(globalPatients));
+      }
+    } catch (error) {
+      console.error('Error loading patients from localStorage:', error);
+      globalPatients = [...MOCK_PATIENTS];
+    }
+  }
+};
+
+const savePatientsToStorage = () => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(globalPatients));
+  } catch (error) {
+    console.error('Error saving patients to localStorage:', error);
+  }
+};
+
 export function usePatients() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call
+    initializePatients();
+    setPatients([...globalPatients]);
+
+    const updateState = () => {
+      setPatients([...globalPatients]);
+    };
+    patientListeners.push(updateState);
+
     setTimeout(() => {
-      setPatients(MOCK_PATIENTS);
       setLoading(false);
     }, 500);
+
+    return () => {
+      patientListeners = patientListeners.filter(listener => listener !== updateState);
+    };
   }, []);
 
-  const addPatient = (patient: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addPatient = (patient: Omit<Patient, 'id'>) => {
     const newPatient: Patient = {
       ...patient,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      updatedAt: new Date()
+      id: Date.now().toString()
     };
-    setPatients(prev => [...prev, newPatient]);
+    globalPatients = [...globalPatients, newPatient];
+    savePatientsToStorage();
+    notifyPatientListeners();
   };
 
   const updatePatient = (id: string, updates: Partial<Patient>) => {
-    setPatients(prev => 
-      prev.map(patient => 
-        patient.id === id 
-          ? { ...patient, ...updates, updatedAt: new Date() }
-          : patient
-      )
+    globalPatients = globalPatients.map(patient =>
+      patient.id === id
+        ? { ...patient, ...updates }
+        : patient
     );
+    savePatientsToStorage();
+    notifyPatientListeners();
   };
 
   const deletePatient = (id: string) => {
-    setPatients(prev => prev.filter(patient => patient.id !== id));
+    globalPatients = globalPatients.filter(patient => patient.id !== id);
+    savePatientsToStorage();
+    notifyPatientListeners();
   };
 
   return {

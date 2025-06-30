@@ -1,22 +1,8 @@
-# Welcome to your Lovable project
+# 🦷 Dental Center Management Dashboard
 
-## Project info
+A responsive and fully functional Dental Center Management System built using **React**. This dashboard simulates the workflows of both **Admins (Dentists)** and **Patients** for appointment handling, patient records, and file uploads using only `localStorage`. This is a frontend-only project created as part of an SDE1 assessment for ENTNT.
 
-**URL**: https://lovable.dev/projects/0d0780c5-eb90-4f2d-807d-731864576a1f
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/0d0780c5-eb90-4f2d-807d-731864576a1f) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## How to run
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -36,6 +22,63 @@ npm i
 npm run dev
 ```
 
+---
+
+## 🚀 Features
+
+### 👨‍⚕️ Admin (Dentist)
+- Simulated login with hardcoded credentials
+- Dashboard with KPIs (upcoming appointments, top patients, revenue, etc.)
+- Full CRUD for patient management
+- Appointment/incident management:
+  - Add treatment details, cost, status
+  - Upload treatment-related files (PDF/X-ray)
+- Calendar view of appointments (Monthly/Weekly)
+
+### 🧑‍💼 Patient
+- Simulated login with limited access
+- View own appointments and treatment history
+- Preview invoices or uploaded files
+- Read-only, secure role-based access
+
+### 🔒 Authentication
+- Simulated user login
+- Session persisted via `localStorage`
+- Role-based access control (Admin vs Patient)
+
+### 🧠 Data Persistence
+- All data saved to `localStorage` (no backend)
+- File uploads saved as Base64/blob URLs
+
+### 💅 UI & UX
+- Responsive design (mobile-first)
+- TailwindCSS-based styling
+- Form validation & user feedback
+- Clean, reusable component structure
+
+---
+
+## 📂 Project Structure
+
+src/
+├── components/ # Reusable components (Form, Modal, Table, etc.)
+├── pages/ # Admin and Patient views
+├── context/ # Auth and App Context
+├── routes/ # Protected routes with React Router
+├── utils/ # Helper functions (localStorage, validators)
+├── assets/ # Icons and images
+└── App.jsx # Main entry point
+
+## What technologies are used for this project?
+
+This project is built with:
+
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
@@ -49,25 +92,3 @@ npm run dev
 - Select the "Codespaces" tab.
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/0d0780c5-eb90-4f2d-807d-731864576a1f) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)

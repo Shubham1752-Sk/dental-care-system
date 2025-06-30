@@ -175,14 +175,7 @@ export default function CalendarView() {
                 <Calendar className="h-5 w-5 mr-2" />
                 {selectedDate && format(selectedDate, 'MMM dd, yyyy')}
               </DialogTitle>
-              <Button
-                size="sm"
-                onClick={() => handleNewAppointment(selectedDate!)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add
-              </Button>
+              
             </div>
           </DialogHeader>
           <div className="space-y-4">
@@ -215,6 +208,14 @@ export default function CalendarView() {
               </div>
             )}
           </div>
+          <Button
+                size="sm"
+                onClick={() => handleNewAppointment(selectedDate!)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add
+              </Button>
         </DialogContent>
       </Dialog>
 

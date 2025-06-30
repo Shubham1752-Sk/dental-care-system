@@ -12,7 +12,8 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { usePatients } from '@/hooks/usePatients';
-import { Appointment } from '@/types';
+import { Appointment, FileAttachment } from '@/types';
+import FileUpload from './FileUpload';
 
 interface AppointmentFormModalProps {
   appointment?: Appointment | null;
@@ -32,7 +33,8 @@ export function AppointmentFormModal({ appointment, selectedDate, isOpen, onClos
     appointmentDateTime: selectedDate || new Date(),
     cost: '',
     treatment: '',
-    status: 'pending' as 'pending' | 'completed' | 'cancelled'
+    status: 'pending' as 'pending' | 'completed' | 'cancelled',
+    files: []
   });
 
   useEffect(() => {
@@ -45,7 +47,8 @@ export function AppointmentFormModal({ appointment, selectedDate, isOpen, onClos
         appointmentDateTime: new Date(appointment.appointmentDateTime),
         cost: appointment.cost?.toString() || '',
         treatment: appointment.treatment || '',
-        status: appointment.status
+        status: appointment.status,
+        files: appointment.files || []
       });
     } else {
       setFormData({
@@ -56,10 +59,15 @@ export function AppointmentFormModal({ appointment, selectedDate, isOpen, onClos
         appointmentDateTime: selectedDate || new Date(),
         cost: '',
         treatment: '',
-        status: 'pending'
+        status: 'pending',
+        files: []
       });
     }
   }, [appointment, selectedDate, isOpen]);
+
+  const handleFilesChange = (files: FileAttachment[]) => {
+    setFormData((prev) => ({ ...prev, files }))
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +206,11 @@ export function AppointmentFormModal({ appointment, selectedDate, isOpen, onClos
               value={formData.comment}
               onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>File Attachments</Label>
+            <FileUpload files={formData.files} onFilesChange={handleFilesChange} />
           </div>
 
           <div className="flex justify-end gap-3 pt-4">

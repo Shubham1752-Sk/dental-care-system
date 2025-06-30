@@ -123,7 +123,7 @@ const initializeAppointments = () => {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        globalAppointments = parsed.map((apt: any) => ({
+        globalAppointments = parsed.map((apt) => ({
           ...apt,
           appointmentDateTime: new Date(apt.appointmentDateTime),
           createdAt: new Date(apt.createdAt),

@@ -14,15 +14,22 @@ const MOCK_USERS: User[] = [
   {
     id: '1',
     name: 'Dr. Smith',
-    email: 'admin@dental.com',
+    email: 'admin@entnt.com',
     role: 'admin'
   },
   {
     id: '2',
     name: 'John Doe',
-    email: 'patient@dental.com',
+    email: 'patient@entnt.com',
     role: 'patient',
     patientId: 'p1'
+  },
+  {
+    id: '2',
+    name: 'Jane Doe',
+    role: 'patient',
+    email: 'jane@entnt.com',
+    patientId: 'p1'  
   }
 ];
 
@@ -44,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     // Mock authentication
     const foundUser = MOCK_USERS.find(u => u.email === email);
+    console.log('Found user:', foundUser);
     if (foundUser) {
       setUser(foundUser);
       localStorage.setItem('user', JSON.stringify(foundUser));

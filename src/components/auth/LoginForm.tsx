@@ -11,17 +11,17 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 const DEMO_CREDENTIALS = [
   {
     role: 'Admin',
-    email: 'admin@dental.com',
+    email: 'admin@entnt.com',
     description: 'admin@entnt.in'
   },
   {
     role: 'Patient',
-    email: 'patient@dental.com', 
+    email: 'patient@entnt.com', 
     description: 'john@entnt.in'
   },
   {
     role: 'Patient',
-    email: 'jane@dental.com',
+    email: 'jane@entnt.com',
     description: 'jane@entnt.in'
   }
 ];
